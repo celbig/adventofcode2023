@@ -24,13 +24,33 @@ class Number:
       
     return False
 
+
+
+
+
 class Symbol:
   def __init__(self, line, match):
     self.value = match.group()
     self.line = line
     self.pos = match.start()
+  
 
+class Gear:
+  def __init__(self, line, match, numbers):
+    self.symbol = Symbol(line, match)
 
+    adjacent_number = []
+    for number in numbers:
+      if number.adjacent(self.symbol):
+        adjacent_number += [number]
+      if len(adjacent_number) > 2:
+        break
+
+    if len(adjacent_number) == 2:
+      self.ratio = adjacent_number[0].value * adjacent_number[1].value
+    else:
+      self.ratio = 0
+    
 
 if __name__ == "__main__":
   # Check input arguments -----
@@ -40,15 +60,18 @@ if __name__ == "__main__":
   file_path = sys.argv[1]
 
   numbers = []
-  symbols = []
+  gears = []
+  lines = []
   with open(file_path) as file: 
     for line_number, line in enumerate(file.readlines()):
+      lines += [line]
       numbers += [Number(line_number, match) for match in re.finditer(r"([0-9]+)", line)]
-      symbols += [Symbol(line_number, match) for match in re.finditer(r"([^.0-9\n])", line)]
-    
-    numbers_valid = [number.value for number in numbers if number.adjacent_to_any_symbol(symbols)]
 
-    solution = sum(numbers_valid)
+    for line_number, line in enumerate(lines):
+      gears += [Gear(line_number, match, numbers) for match in re.finditer(r"(\*)", line)]
+    
+  
+    solution = sum([gear.ratio for gear in gears])
     print(f"The solution for day 3 part 1 is: {solution}")
 
 
