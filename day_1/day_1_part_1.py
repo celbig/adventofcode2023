@@ -15,6 +15,7 @@ if __name__ == "__main__":
 
   with open(file_path) as file:
     numbers = [parse_line(line) for line in file.readlines()]
+
     
     solution = sum(numbers)
     print(f"The answer for day 1 is: {solution}")
